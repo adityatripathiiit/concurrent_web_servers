@@ -3,15 +3,23 @@
 #include "request.h"
 #include "io_helper.h"
 #include <stdbool.h>
-#include <semaphore.h>
 #include "common_threads.h"
-
+#include <string.h>
 int BUFSIZE = 1;
 char default_root[] = ".";
 
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t full = PTHREAD_COND_INITIALIZER;
-pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
+char* SCHEDULING = "FIFO";
+
+pthread_mutex_t lock;
+pthread_cond_t full;
+pthread_cond_t empty;
+
+
+void init(){
+	Pthread_cond_init(&full, NULL);
+	Pthread_cond_init(&empty, NULL);
+	Pthread_mutex_init(&lock, NULL)
+}
 
 int * BUFFER ; 
 volatile int fill = 0;
@@ -51,25 +59,28 @@ void* thread_worker(void* arg)
 int main(int argc, char *argv[]) {
     int c;
     char *root_dir = default_root;
+	init();
     int port = 10000;
 	int threads; 
     while ((c = getopt(argc, argv, "d:p:t:b:")) != -1)
-	switch (c) {
-	case 'd':
-	    root_dir = optarg;
-	    break;
-	case 'p':
-	    port = atoi(optarg);
-	    break;
-	case 't':
-	    threads = atoi(optarg);
-	    break;
-	case 'b':
-	    BUFSIZE = atoi(optarg);
-	    break;
-	default:
-	    fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size]\n");
-	    exit(1);
+	{
+		switch (c) {
+		case 'd':
+			root_dir = optarg;
+			break;
+		case 'p':
+			port = atoi(optarg);
+			break;
+		case 't':
+			threads = atoi(optarg);
+			break;
+		case 'b':
+			BUFSIZE = atoi(optarg);
+			break;
+		default:
+			fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size]\n");
+			exit(1);
+		}
 	}
 
 	BUFFER = malloc(BUFSIZE*sizeof(int));
