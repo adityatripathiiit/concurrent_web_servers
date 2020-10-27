@@ -14,7 +14,7 @@ wserver: wserver.o request.o io_helper.o
 	$(CC) $(CFLAGS) -o wserver wserver.o request.o io_helper.o 
 
 wclient: wclient.o io_helper.o
-	$(CC) $(CFLAGS) -o wclient wclient.o io_helper.o
+	$(CC) $(CFLAGS) -o wclient wclient.o io_helper.o -pthread
 
 spin.cgi: spin.c
 	$(CC) $(CFLAGS) -o spin.cgi spin.c
