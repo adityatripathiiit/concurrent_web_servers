@@ -34,17 +34,20 @@ int main(int argc, char *argv[]) {
     int listen_fd = open_listen_fd_or_die(port);
 	while (1) {
 		struct sockaddr_in client_addr;
-		int client_len = sizeof(client_addr);
-		int conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
-		int rc = fork();
-		if(rc == 0)
-		{				
-			request_handle(conn_fd);
-			return; 
-			
-		} 
-
-		close_or_die(conn_fd); 
+        int client_len = sizeof(client_addr);
+        int conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
+        int rc = fork();
+        if(rc < 0){
+           perror("Cannot fork\n");
+           exit(0);
+        }
+        if(rc == 0)
+        {             
+           request_handle(conn_fd);
+       	   close_or_die(conn_fd);
+           exit(1);
+        }
+        close_or_die(conn_fd);
 	}	    
 	
     return 0;
