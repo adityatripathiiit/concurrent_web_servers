@@ -20,6 +20,7 @@
 //
 
 #include "io_helper.h"
+#include <pthread.h>
 
 #define MAXBUF (8192)
 
@@ -66,27 +67,65 @@ void client_print(int fd) {
     }
 }
 
-int main(int argc, char *argv[]) {
-    char *host, *filename;
+typedef struct _client_data {
+    char *host;
+    char *filename;
     int port;
-    int clientfd;
+} client_data;
+
+void* single_client(void* arg) {
     
-    if (argc != 4) {
-	fprintf(stderr, "Usage: %s <host> <port> <filename>\n", argv[0]);
-	exit(1);
-    }
-    
-    host = argv[1];
-    port = atoi(argv[2]);
-    filename = argv[3];
-    
+    client_data *t = (client_data*)(arg);
+    char* host = t->host;
+    char* filename = t->filename;
+    int port = t->port;
     /* Open a single connection to the specified host and port */
-    clientfd = open_client_fd_or_die(host, port);
+    int clientfd = open_client_fd_or_die(host, port);
     
     client_send(clientfd, filename);
     client_print(clientfd);
     
     close_or_die(clientfd);
+    return NULL;
+
+}
+
+
+int main(int argc, char *argv[]) {
+    char *host, *filename;
+    int port;
+    int clientfd;
+    
+    if (argc < 4) {
+        fprintf(stderr, "Usage: %s <host> <port> <filename(s)>\n", argv[0]);
+        exit(1);
+    }
+    
+    host = argv[1];
+    port = atoi(argv[2]);
+
+    int concur_clients = argc - 3;
+    pthread_t threads[concur_clients];
+    
+    for(int i = 0; i < concur_clients; i++) {
+        client_data *d = malloc(sizeof(client_data));
+        d->host = host;
+        d->port = port;
+        d->filename = argv[3 + i];
+        pthread_create(&threads[i], NULL, single_client, (void *)d);
+    }
+    for(int i = 0; i < concur_clients; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    // filename = argv[3];
+    
+    /* Open a single connection to the specified host and port */
+    // clientfd = open_client_fd_or_die(host, port);
+    
+    // client_send(clientfd, filename);
+    // client_print(clientfd);
+    
+    // close_or_die(clientfd);
     
     exit(0);
 }

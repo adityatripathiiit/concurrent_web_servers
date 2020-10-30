@@ -58,13 +58,13 @@ int request_parse_uri(char *uri, char *filename, char *cgiargs) {
     char *ptr;
     
     if (!strstr(uri, "cgi")) { 
-	// static
-	strcpy(cgiargs, "");
-	sprintf(filename, ".%s", uri);
-	if (uri[strlen(uri)-1] == '/') {
-	    strcat(filename, "index.html");
-	}
-	return 1;
+        // static
+        strcpy(cgiargs, "");
+        sprintf(filename, ".%s", uri);
+        if (uri[strlen(uri)-1] == '/') {
+            strcat(filename, "index.html");
+        }
+        return 1;
     } else { 
 	// dynamic
 	ptr = index(uri, '?');
@@ -115,6 +115,7 @@ void request_serve_dynamic(int fd, char *filename, char *cgiargs) {
 }
 
 void request_serve_static(int fd, char *filename, int filesize) {
+    printf("FS is - %d \n", filesize);
     int srcfd;
     char *srcp, filetype[MAXBUF], buf[MAXBUF];
     
@@ -142,7 +143,7 @@ void request_serve_static(int fd, char *filename, int filesize) {
 }
 
 // handle a request
-void request_handle(int fd) {
+void request_handle(int fd) {    
     int is_static;
     struct stat sbuf;
     char buf[MAXBUF], method[MAXBUF], uri[MAXBUF], version[MAXBUF];
@@ -151,6 +152,8 @@ void request_handle(int fd) {
     readline_or_die(fd, buf, MAXBUF);
     sscanf(buf, "%s %s %s", method, uri, version);
     printf("method:%s uri:%s version:%s\n", method, uri, version);
+
+    printf("Method is %s \n", method);
     
     if (strcasecmp(method, "GET")) {
 	request_error(fd, method, "501", "Not Implemented", "server does not implement this method");
