@@ -21,7 +21,7 @@ int get_from_buffer();
 
 typedef struct __heap_node_t {
     int fd;
-    int parameter;
+    off_t parameter;
 } heap_node;
 
 typedef struct __heap_t {
@@ -33,7 +33,7 @@ typedef struct __heap_t {
 
 void _swap(heap_node* x, heap_node* y);
 heap* init_heap(int heap_size);
-void insert_in_heap(int conn_fd, int parameter, heap* Heap);
+void insert_in_heap(int conn_fd, off_t parameter, heap* Heap);
 void heapify(heap* Heap, int index);
 int extract_min(heap* Heap);
 

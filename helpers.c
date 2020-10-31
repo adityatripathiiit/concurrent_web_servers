@@ -49,6 +49,8 @@ off_t get_file_size(int fd){
         } else  file_size = sbuf.st_size;    
         return file_size;   
     } else {
-        return 0;
+        file_size = 0;
+        return file_size;
+    
     }    
 }

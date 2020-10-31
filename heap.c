@@ -25,7 +25,7 @@ heap* init_heap(int heap_size){
     return newHeap;
 }
 
-void insert_in_heap(int conn_fd, int parameter, heap* Heap){
+void insert_in_heap(int conn_fd, off_t parameter, heap* Heap){
     assert(Heap->curr_size < Heap->max_size);
 
     int index = Heap->curr_size;
