@@ -81,7 +81,8 @@ int is_buffer_empty(){
 
 void put_in_buffer(int conn_fd){    
     if(strcmp(scheduling_policy, "SFF")==0){
-        off_t parameter = get_file_size(conn_fd);                          
+        off_t parameter = requestFileSize(conn_fd);   
+        printf("%ld\n", parameter);
         insert_in_heap(conn_fd, parameter, Heap);        
     } else if(strcmp("FIFO", scheduling_policy)==0){
         insert_in_queue(conn_fd, Queue);
