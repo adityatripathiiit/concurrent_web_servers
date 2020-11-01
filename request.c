@@ -115,7 +115,7 @@ void request_serve_dynamic(int fd, char *filename, char *cgiargs) {
 }
 
 void request_serve_static(int fd, char *filename, int filesize) {
-    printf("FS is - %d \n", filesize);
+    // printf("FS is - %d \n", filesize);
     int srcfd;
     char *srcp, filetype[MAXBUF], buf[MAXBUF];
     
@@ -152,8 +152,6 @@ void request_handle(int fd) {
     readline_or_die(fd, buf, MAXBUF);
     sscanf(buf, "%s %s %s", method, uri, version);
     printf("method:%s uri:%s version:%s\n", method, uri, version);
-
-    printf("Method is %s \n", method);
     
     if (strcasecmp(method, "GET")) {
 	request_error(fd, method, "501", "Not Implemented", "server does not implement this method");

@@ -50,10 +50,13 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_in client_addr;
 	int client_len;
 	int conn_fd; 
+	
     while (1) {
 		printf("Reached \n");
 		client_len = sizeof(client_addr);
 		conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
+		printf("Connected, FD: %d\n", conn_fd);
+		
 		put_in_pool(conn_fd);		
     }
     return 0;

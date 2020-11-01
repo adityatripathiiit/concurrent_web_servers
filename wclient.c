@@ -117,15 +117,6 @@ int main(int argc, char *argv[]) {
     for(int i = 0; i < concur_clients; i++) {
         pthread_join(threads[i], NULL);
     }
-    // filename = argv[3];
-    
-    /* Open a single connection to the specified host and port */
-    // clientfd = open_client_fd_or_die(host, port);
-    
-    // client_send(clientfd, filename);
-    // client_print(clientfd);
-    
-    // close_or_die(clientfd);
     
     exit(0);
 }

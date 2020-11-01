@@ -51,8 +51,10 @@ int get_from_pool(){
     Pthread_mutex_lock(&LOCK);    
     while(is_buffer_empty()==1){        
         Pthread_cond_wait(&EMPTY, &LOCK);        
-    }            
+    }
     int conn_fd = get_from_buffer();
+
+    printf("Scheduled, FD: %d\n", conn_fd);
     Pthread_cond_signal(&FILL);
     Pthread_mutex_unlock(&LOCK);
 
