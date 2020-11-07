@@ -11,7 +11,7 @@ queue* init_queue(int queue_size){
     newQueue->fill = 0;
     newQueue->use = 0;
 
-    newQueue->array = (queue_node*)malloc(sizeof(queue_node)*queue_size);    
+    newQueue->array = (node*)malloc(sizeof(node)*queue_size);    
 
     if(newQueue->array == NULL) exit(1);
 

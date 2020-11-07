@@ -1,8 +1,8 @@
 #include "common_headers.h"
 #include "definitions.h"
 
-void _swap(heap_node* x, heap_node* y){
-    heap_node temp = *x;
+void _swap(node* x, node* y){
+    node temp = *x;
     *x = *y;
     *y = temp;
 }
@@ -13,7 +13,7 @@ heap* init_heap(int heap_size){
     if(!newHeap) exit(1);
     newHeap->max_size = heap_size;
     newHeap->curr_size = 0;
-    newHeap->array = (heap_node*)malloc(heap_size*sizeof(heap_node));
+    newHeap->array = (node*)malloc(heap_size*sizeof(node));
 
     if(!newHeap->array) exit(1);
 

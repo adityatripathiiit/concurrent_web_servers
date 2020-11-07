@@ -40,8 +40,11 @@ int main(int argc, char *argv[]) {
 		}
 	}		
 
-	make_threads_and_buffers(no_of_threads, buffer_size, scheduling_policy);	
+	// make_threads_and_buffers(no_of_threads, buffer_size, scheduling_policy);	
 
+	scheduler* d = init_scheduler(scheduling_policy, buffer_size);
+	thread_pool* workers = init_thread_pool(no_of_threads);
+	start_threads(d, workers);
 	// run out of this directory
     chdir_or_die(root_dir);
     
@@ -57,7 +60,8 @@ int main(int argc, char *argv[]) {
 		conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
 		printf("Connected, FD: %d\n", conn_fd);
 		
-		put_in_pool(conn_fd);		
+		// put_in_pool(conn_fd);	
+		give_to_scheduler(workers, d, conn_fd);	
     }
     return 0;
 }
