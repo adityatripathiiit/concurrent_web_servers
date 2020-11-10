@@ -10,6 +10,8 @@ scheduler* init_scheduler(char* policy, int buffer_size) {
     d->policy = policy;
     d->buffer_size = buffer_size;
     d->curr_size = 0;
+
+    // Decide the data structure based on scheduling policy
     if (strcmp("SFF", policy) == 0) {        
         d->Heap = init_heap(buffer_size); 
         d->Queue = NULL;       
@@ -42,8 +44,12 @@ thread_pool* init_thread_pool(int num_threads) {
 void start_threads(scheduler* d, thread_pool* workers) {
     for (int i = 0; i < workers->num_threads; i++) {
         thread_arg* arg = (thread_arg*)malloc(sizeof(thread_arg));
+        if(arg == NULL) {
+            printf("Thread number %d: Creation failed", i);
+            continue;
+        }
         arg->workers = workers;
-        arg->d = d;
+        arg->scheduler = d;
         arg->num_request = i;
         Pthread_create(&workers->pool[i], NULL, thread_worker, arg);
     }

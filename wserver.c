@@ -40,11 +40,15 @@ int main(int argc, char *argv[]) {
 		}
 	}		
 
-	// make_threads_and_buffers(no_of_threads, buffer_size, scheduling_policy);	
+	// The scheduler is responsible maintaing the requests according to scheduling policy
+	scheduler* scheduler = init_scheduler(scheduling_policy, buffer_size);
 
-	scheduler* d = init_scheduler(scheduling_policy, buffer_size);
+	// The thread_pool maintains all the threadsl, locks and condition variables
 	thread_pool* workers = init_thread_pool(no_of_threads);
-	start_threads(d, workers);
+
+	// starting the threads
+	start_threads(scheduler, workers);
+	
 	// run out of this directory
     chdir_or_die(root_dir);
     
@@ -60,8 +64,8 @@ int main(int argc, char *argv[]) {
 		conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
 		printf("Connected, FD: %d\n", conn_fd);
 		
-		// put_in_pool(conn_fd);	
-		give_to_scheduler(workers, d, conn_fd);	
+		// Schedule the current request
+		give_to_scheduler(workers, scheduler, conn_fd);	
     }
     return 0;
 }
