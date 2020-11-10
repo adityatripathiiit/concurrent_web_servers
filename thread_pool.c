@@ -10,6 +10,8 @@ scheduler* init_scheduler(char* policy, int buffer_size) {
     d->policy = policy;
     d->buffer_size = buffer_size;
     d->curr_size = 0;
+
+    // Decide the data structure based on scheduling policy
     if (strcmp("SFF", policy) == 0) {        
         d->Heap = init_heap(buffer_size); 
         d->Queue = NULL;       
@@ -42,8 +44,12 @@ thread_pool* init_thread_pool(int num_threads) {
 void start_threads(scheduler* d, thread_pool* workers) {
     for (int i = 0; i < workers->num_threads; i++) {
         thread_arg* arg = (thread_arg*)malloc(sizeof(thread_arg));
+        if(arg == NULL) {
+            printf("Thread number %d: Creation failed", i);
+            continue;
+        }
         arg->workers = workers;
-        arg->d = d;
+        arg->scheduler = d;
         arg->num_request = i;
         Pthread_create(&workers->pool[i], NULL, thread_worker, arg);
     }
@@ -53,7 +59,7 @@ void schedule_new_request(scheduler* d, int conn_fd) {
 
     if (strcmp(d->policy, "SFF") == 0) {
         off_t parameter = requestFileSize(conn_fd);   
-        printf("%ld\n", parameter);
+        printf("File Size for %d :%ld\n", conn_fd,parameter);
         insert_in_heap(conn_fd, parameter, d->Heap);        
     
     } else if (strcmp("FIFO", d->policy) == 0) {
@@ -103,7 +109,7 @@ int get_from_scheduler(thread_pool* workers, scheduler* d) {
     }
     int conn_fd = pick_request(d);
 
-    printf("Scheduled, FD: %d\n", conn_fd);
+    printf("Request Scheduled for FD: %d\n", conn_fd);
     
     Pthread_cond_signal(&workers->FILL);
     Pthread_mutex_unlock(&workers->LOCK);

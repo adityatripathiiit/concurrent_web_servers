@@ -1,20 +1,6 @@
 #ifndef __definitions_h__
 #define __definitions_h__
 
-// producer and consumer
-
-void make_threads_and_buffers(int no_of_threads, int buffer_size, char *policy);
-void put_in_pool(int conn_fd);
-int get_from_pool();
-void* thread_worker(void* arg);
-
-// buffer
-
-int is_buffer_full();
-int is_buffer_empty();
-void put_in_buffer(int conn_fd);
-int get_from_buffer(); 
-
 // different buffer implementations -
 
 typedef struct __node_t {
@@ -77,7 +63,7 @@ typedef struct __scheduler_t {
 
 typedef struct __thread_arg {
 
-    scheduler* d;
+    scheduler* scheduler;
     thread_pool* workers;
     int num_request;
 
@@ -99,5 +85,7 @@ int is_scheduler_full(scheduler* d);
 int is_scheduler_empty(scheduler* d);
 void give_to_scheduler(thread_pool* workers, scheduler* d, int conn_fd);
 int get_from_scheduler(thread_pool* workers, scheduler* d);
+
+void* thread_worker(void* arg);
 
 #endif
