@@ -1,6 +1,10 @@
 #ifndef __definitions_h__
 #define __definitions_h__
 
+#define MAXBUF 16384
+#define MAXFILETYPE 8192
+
+
 // different buffer implementations -
 
 typedef struct __node_t {
@@ -75,6 +79,7 @@ typedef struct __thread_arg {
 int get_file_name(int fd, char* filename);
 off_t get_file_size(int fd);
 int request_parse_uri_modified(char *uri, char *filename, char *cgiargs);
+long requestFileSize(int fd);
 
 scheduler* init_scheduler(char* policy, int buffer_size);
 thread_pool* init_thread_pool(int num_threads);

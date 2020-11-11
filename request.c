@@ -1,18 +1,17 @@
 #include "io_helper.h"
 #include "request.h"
-
+#include "definitions.h"
 //
 // Some of this code stolen from Bryant/O'Halloran
 // Hopefully this is not a problem ... :)
 //
 
-#define MAXBUF (8192)
 
 void request_error(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg) {
     char buf[MAXBUF], body[MAXBUF];
     
     // Create the body of error message first (have to know its length for header)
-    sprintf(body, ""
+    snprintf(body, MAXBUF, ""
 	    "<!doctype html>\r\n"
 	    "<head>\r\n"
 	    "  <title>OSTEP WebServer Error</title>\r\n"
@@ -24,13 +23,13 @@ void request_error(int fd, char *cause, char *errnum, char *shortmsg, char *long
 	    "</html>\r\n", errnum, shortmsg, longmsg, cause);
     
     // Write out the header information for this response
-    sprintf(buf, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);
+    snprintf(buf, MAXBUF, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);
     write_or_die(fd, buf, strlen(buf));
     
-    sprintf(buf, "Content-Type: text/html\r\n");
+    snprintf(buf, MAXBUF, "Content-Type: text/html\r\n");
     write_or_die(fd, buf, strlen(buf));
     
-    sprintf(buf, "Content-Length: %lu\r\n\r\n", strlen(body));
+    snprintf(buf, MAXBUF, "Content-Length: %lu\r\n\r\n", strlen(body));
     write_or_die(fd, buf, strlen(buf));
     
     // Write out the body last
@@ -60,7 +59,7 @@ int request_parse_uri(char *uri, char *filename, char *cgiargs) {
     if (!strstr(uri, "cgi")) { 
         // static
         strcpy(cgiargs, "");
-        sprintf(filename, ".%s", uri);
+        snprintf(filename, MAXBUF, ".%s", uri);
         if (uri[strlen(uri)-1] == '/') {
             strcat(filename, "index.html");
         }
@@ -69,12 +68,12 @@ int request_parse_uri(char *uri, char *filename, char *cgiargs) {
 	// dynamic
 	ptr = index(uri, '?');
 	if (ptr) {
-	    strcpy(cgiargs, ptr+1);
+	    strncpy(cgiargs, ptr+1, MAXBUF);
 	    *ptr = '\0';
 	} else {
 	    strcpy(cgiargs, "");
 	}
-	sprintf(filename, ".%s", uri);
+	snprintf(filename, MAXBUF, ".%s", uri);
 	return 0;
     }
 }
@@ -98,7 +97,7 @@ void request_serve_dynamic(int fd, char *filename, char *cgiargs) {
     
     // The server does only a little bit of the header.  
     // The CGI script has to finish writing out the header.
-    sprintf(buf, ""
+    snprintf(buf, MAXBUF, ""
 	    "HTTP/1.0 200 OK\r\n"
 	    "Server: OSTEP WebServer\r\n");
     
@@ -117,7 +116,7 @@ void request_serve_dynamic(int fd, char *filename, char *cgiargs) {
 void request_serve_static(int fd, char *filename, int filesize) {
     // printf("FS is - %d \n", filesize);
     int srcfd;
-    char *srcp, filetype[MAXBUF], buf[MAXBUF];
+    char *srcp, filetype[MAXFILETYPE], buf[MAXBUF];
     
     request_get_filetype(filename, filetype);
     srcfd = open_or_die(filename, O_RDONLY, 0);
@@ -128,7 +127,7 @@ void request_serve_static(int fd, char *filename, int filesize) {
     close_or_die(srcfd);
     
     // put together response
-    sprintf(buf, ""
+    snprintf(buf, MAXBUF, ""
 	    "HTTP/1.0 200 OK\r\n"
 	    "Server: OSTEP WebServer\r\n"
 	    "Content-Length: %d\r\n"

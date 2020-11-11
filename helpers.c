@@ -1,11 +1,12 @@
 #include "common_headers.h"
 
+#define MAXBUF 16384
 
 int request_parse_uri_modified(char *uri, char *filename, char *cgiargs) {
     char *ptr;    
     if (!strstr(uri, "cgi")) { 	            
         strcpy(cgiargs, "");
-        sprintf(filename, ".%s", uri);
+        snprintf(filename, MAXBUF, ".%s", uri);
         if (uri[strlen(uri)-1] == '/') {
             strcat(filename, "index.html");
         }
@@ -14,7 +15,7 @@ int request_parse_uri_modified(char *uri, char *filename, char *cgiargs) {
         // dynamic
         ptr = index(uri, '?');
         if (ptr) {
-            strcpy(cgiargs, ptr+1);
+            strncpy(cgiargs, ptr+1, MAXBUF);
             *ptr = '\0';
         } else {
             strcpy(cgiargs, "");
@@ -25,8 +26,8 @@ int request_parse_uri_modified(char *uri, char *filename, char *cgiargs) {
 
 
 long requestFileSize(int fd) {
-	char buf[8192], method[8192], uri[8192], version[8192];
-    char filename[8192], cgiargs[8192];	
+	char buf[MAXBUF], method[MAXBUF], uri[MAXBUF], version[MAXBUF];
+    char filename[MAXBUF], cgiargs[MAXBUF];	
 	struct stat s;
 	recv(fd, buf, sizeof(buf), MSG_PEEK);
    	sscanf(buf, "%s %s %s\n", method, uri, version);

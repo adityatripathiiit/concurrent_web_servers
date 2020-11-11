@@ -20,22 +20,24 @@
 //
 
 #include "io_helper.h"
+#include "definitions.h"
 #include <pthread.h>
 
-#define MAXBUF (8192)
 
 //
 // Send an HTTP request for the specified file 
 //
 void client_send(int fd, char *filename) {
     char buf[MAXBUF];
-    char hostname[MAXBUF];
+    char hostname[MAXFILETYPE];
+    char hostheader[MAXBUF];
     
     gethostname_or_die(hostname, MAXBUF);
     
     /* Form and send the HTTP request */
-    sprintf(buf, "GET %s HTTP/1.1\n", filename);
-    sprintf(buf, "%shost: %s\n\r\n", buf, hostname);
+    snprintf(buf, MAXBUF, "GET %s HTTP/1.1\n", filename);
+    snprintf(hostheader, MAXBUF, "host: %s\n\r\n", hostname);
+    strncat(buf, hostheader, MAXBUF);
     write_or_die(fd, buf, strlen(buf));
 }
 
@@ -92,9 +94,8 @@ void* single_client(void* arg) {
 
 
 int main(int argc, char *argv[]) {
-    char *host, *filename;
+    char *host;
     int port;
-    int clientfd;
     
     if (argc < 4) {
         fprintf(stderr, "Usage: %s <host> <port> <filename(s)>\n", argv[0]);
@@ -109,6 +110,10 @@ int main(int argc, char *argv[]) {
     
     for(int i = 0; i < concur_clients; i++) {
         client_data *d = malloc(sizeof(client_data));
+        if(d == NULL) {
+            printf("Could not create request for: %s\n", argv[3 + i]);
+            continue;
+        }
         d->host = host;
         d->port = port;
         d->filename = argv[3 + i];
