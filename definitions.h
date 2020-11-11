@@ -6,6 +6,7 @@
 typedef struct __node_t {
     int fd;
     off_t parameter;
+    char* file_name;    
 } node;
 
 
@@ -14,15 +15,17 @@ typedef struct __node_t {
 typedef struct __heap_t {
     int curr_size;
     int max_size;
+    int by_file_name;
     node* array;
 } heap;
 
 
 void _swap(node* x, node* y);
-heap* init_heap(int heap_size);
-void insert_in_heap(int conn_fd, off_t parameter, heap* Heap);
+heap* init_heap(int heap_size, int by_file_name);
+void insert_in_heap(int conn_fd, off_t parameter, char* file_name, heap* Heap);
 void heapify(heap* Heap, int index);
 int extract_min(heap* Heap);
+int heap_comparator(heap* Heap, int i, int j);
 
 
 // circular queue (for FIFO)
@@ -69,12 +72,20 @@ typedef struct __thread_arg {
 
 } thread_arg;
 
+// helper structs
+
+typedef struct __file_prop_t {
+    char* file_name;
+    off_t file_size;
+} file_prop;
+
 
 // helper functions
 
 int get_file_name(int fd, char* filename);
 off_t get_file_size(int fd);
 int request_parse_uri_modified(char *uri, char *filename, char *cgiargs);
+file_prop* request_file_properties(int fd);
 
 scheduler* init_scheduler(char* policy, int buffer_size);
 thread_pool* init_thread_pool(int num_threads);

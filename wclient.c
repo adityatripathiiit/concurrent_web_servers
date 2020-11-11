@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
     int port;
     int clientfd;
     if (argc < 5) {
-        fprintf(stderr, "Usage: %s<host> <port> <testbit> <filename(s)> \n", argv[0]);
+        fprintf(stderr, "Usage: %s <host> <port> <testbit> <filename(s)> \n", argv[0]);
         exit(1);
     }
     if(atoi(argv[3]) == 1){

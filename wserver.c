@@ -29,13 +29,14 @@ int main(int argc, char *argv[]) {
 		case 's':
 			if(strcmp("FIFO",optarg)==0) scheduling_policy = "FIFO";
 			else if(strcmp("SFF",optarg)==0) scheduling_policy = "SFF";
+			else if(strcmp("SFNF",optarg)==0) scheduling_policy = "SFNF";
 			else {
-				fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size] [-s SFF or FIFO]\n");
+				fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size] [-s SFF or FIFO or SFNF]\n");
 				exit(1);	
 			}
 			break;
 		default:
-			fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size] [-s SFF or FIFO]\n");
+			fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size] [-s SFF or FIFO or SFNF]\n");
 			exit(1);
 		}
 	}		
