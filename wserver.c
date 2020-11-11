@@ -29,13 +29,14 @@ int main(int argc, char *argv[]) {
 		case 's':
 			if(strcmp("FIFO",optarg)==0) scheduling_policy = "FIFO";
 			else if(strcmp("SFF",optarg)==0) scheduling_policy = "SFF";
+			else if(strcmp("SFNF",optarg)==0) scheduling_policy = "SFNF";
 			else {
-				fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size] [-s SFF or FIFO]\n");
+				fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size] [-s SFF or FIFO or SFNF]\n");
 				exit(1);	
 			}
 			break;
 		default:
-			fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size] [-s SFF or FIFO]\n");
+			fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b Buffer Size] [-s SFF or FIFO or SFNF]\n");
 			exit(1);
 		}
 	}		
@@ -57,12 +58,12 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_in client_addr;
 	int client_len;
 	int conn_fd; 
-	
+	printf("Server Started \n");
     while (1) {
-		printf("Reached \n");
+		
 		client_len = sizeof(client_addr);
 		conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
-		printf("Connected, FD: %d\n", conn_fd);
+		printf("Connection Accepted for FD: %d\n", conn_fd);
 		
 		// Schedule the current request
 		give_to_scheduler(workers, scheduler, conn_fd);	

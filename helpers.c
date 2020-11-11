@@ -19,20 +19,24 @@ int request_parse_uri_modified(char *uri, char *filename, char *cgiargs) {
             *ptr = '\0';
         } else {
             strcpy(cgiargs, "");
-        }        
+        }                
         return 0;
     }
 }
 
 
-long requestFileSize(int fd) {
-	char buf[MAXBUF], method[MAXBUF], uri[MAXBUF], version[MAXBUF];
-    char filename[MAXBUF], cgiargs[MAXBUF];	
+file_prop* request_file_properties(int fd) {
+	char buf[8192], method[8192], uri[8192], version[8192];
+    char filename[8192], cgiargs[8192];	
 	struct stat s;
 	recv(fd, buf, sizeof(buf), MSG_PEEK);
    	sscanf(buf, "%s %s %s\n", method, uri, version);
 	request_parse_uri_modified(uri, filename, cgiargs);
 	stat(filename, &s);
 
-	return (long)s.st_size;
+    file_prop* FileProp = (file_prop*)malloc(sizeof(file_prop));
+    FileProp->file_name = filename;
+    FileProp->file_size = (long)s.st_size;
+
+	return FileProp;
 }

@@ -22,8 +22,11 @@
 #include "io_helper.h"
 #include "definitions.h"
 #include <pthread.h>
+#include <sys/time.h> 
+#include <unistd.h>
+// #define MAXBUF (8192)
 
-
+volatile int testbit = 0;
 //
 // Send an HTTP request for the specified file 
 //
@@ -51,7 +54,9 @@ void client_print(int fd) {
     // Read and display the HTTP Header 
     n = readline_or_die(fd, buf, MAXBUF);
     while (strcmp(buf, "\r\n") && (n > 0)) {
-	printf("Header: %s", buf);
+        if(testbit == 0)
+            printf("Header: %s", buf);
+        
 	n = readline_or_die(fd, buf, MAXBUF);
 	
 	// If you want to look for certain HTTP tags... 
@@ -64,7 +69,9 @@ void client_print(int fd) {
     // Read and display the HTTP Body 
     n = readline_or_die(fd, buf, MAXBUF);
     while (n > 0) {
-	printf("%s", buf);
+        if(testbit == 0)
+            printf("Header: %s", buf);
+            
 	n = readline_or_die(fd, buf, MAXBUF);
     }
 }
@@ -96,19 +103,39 @@ void* single_client(void* arg) {
 int main(int argc, char *argv[]) {
     char *host;
     int port;
-    
-    if (argc < 4) {
-        fprintf(stderr, "Usage: %s <host> <port> <filename(s)>\n", argv[0]);
+    if (argc < 5) {
+        fprintf(stderr, "Usage: %s <host> <port> <testbit> <filename(s)> \n", argv[0]);
         exit(1);
     }
-    
+    if(atoi(argv[3]) == 1){
+        #define TESTMODE 
+    }
+
     host = argv[1];
     port = atoi(argv[2]);
-
-    int concur_clients = argc - 3;
+    testbit = atoi(argv[3]);
+    int concur_clients = argc - 4;
     pthread_t threads[concur_clients];
+
+    #ifdef TESTMODE
+        char path[1024] = "./benchmarking/data/concurr_test_sff.csv";
+
+        if (concur_clients == 1){
+            remove(path);   
+        }
+    
+        FILE * f = fopen(path, "a");
+
+        if(f == NULL){
+            printf("Could not create the CSV file %s\n", path);
+            return 0;
+        }
+        struct timeval start, end; 
+        gettimeofday(&start, NULL);
+    #endif
     
     for(int i = 0; i < concur_clients; i++) {
+        
         client_data *d = malloc(sizeof(client_data));
         if(d == NULL) {
             printf("Could not create request for: %s\n", argv[3 + i]);
@@ -116,12 +143,22 @@ int main(int argc, char *argv[]) {
         }
         d->host = host;
         d->port = port;
-        d->filename = argv[3 + i];
+        d->filename = argv[4 + i];
         pthread_create(&threads[i], NULL, single_client, (void *)d);
+        
     }
     for(int i = 0; i < concur_clients; i++) {
         pthread_join(threads[i], NULL);
     }
+
+    #ifdef TESTMODE
+        gettimeofday(&end, NULL);
+        double time_taken; 
+        time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
+        time_taken = (time_taken + (end.tv_usec -start.tv_usec)) * 1e-6; 
+        fprintf(f,"%d,%f\n",concur_clients, time_taken);
+        fclose(f);
+    #endif
     
     exit(0);
 }

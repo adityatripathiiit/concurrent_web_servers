@@ -13,11 +13,14 @@ scheduler* init_scheduler(char* policy, int buffer_size) {
 
     // Decide the data structure based on scheduling policy
     if (strcmp("SFF", policy) == 0) {        
-        d->Heap = init_heap(buffer_size); 
+        d->Heap = init_heap(buffer_size, 0); 
         d->Queue = NULL;       
     } else if (strcmp("FIFO", policy) == 0) {        
         d->Queue = init_queue(buffer_size);        
         d->Heap = NULL;
+    } else if(strcmp("SFNF", policy) == 0){
+        d->Heap = init_heap(buffer_size, 1); 
+        d->Queue = NULL;       
     }
     return d;  
 
@@ -57,14 +60,17 @@ void start_threads(scheduler* d, thread_pool* workers) {
 
 void schedule_new_request(scheduler* d, int conn_fd) {
 
-    if (strcmp(d->policy, "SFF") == 0) {
-        off_t parameter = requestFileSize(conn_fd);   
-        printf("%ld\n", parameter);
-        insert_in_heap(conn_fd, parameter, d->Heap);        
+    if (strcmp(d->policy, "SFF") == 0 || strcmp("SFNF", d->policy) == 0) {
+
+        file_prop* fileProp = request_file_properties(conn_fd);           
+        printf("File Size for %d : %ld and name %s\n", conn_fd,fileProp->file_size,fileProp->file_name);
+        insert_in_heap(conn_fd, fileProp->file_size,fileProp->file_name,d->Heap);        
     
     } else if (strcmp("FIFO", d->policy) == 0) {
+
         insert_in_queue(conn_fd, d->Queue);
-    }
+
+    } 
     d->curr_size++;
 
 }
@@ -72,7 +78,7 @@ void schedule_new_request(scheduler* d, int conn_fd) {
 int pick_request(scheduler* d) {
 
     int conn_fd;
-    if (strcmp(d->policy, "SFF") == 0) {
+    if (strcmp(d->policy, "SFF") == 0 || strcmp("SFNF", d->policy) == 0) {
         conn_fd = extract_min(d->Heap);        
     } else if (strcmp("FIFO", d->policy) == 0) {
         conn_fd = get_from_queue(d->Queue);
@@ -109,7 +115,7 @@ int get_from_scheduler(thread_pool* workers, scheduler* d) {
     }
     int conn_fd = pick_request(d);
 
-    printf("Scheduled, FD: %d\n", conn_fd);
+    printf("Request Scheduled for FD: %d\n", conn_fd);
     
     Pthread_cond_signal(&workers->FILL);
     Pthread_mutex_unlock(&workers->LOCK);
