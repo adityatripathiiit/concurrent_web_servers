@@ -40,3 +40,13 @@ file_prop* request_file_properties(int fd) {
 
 	return FileProp;
 }
+
+int is_uri_safe(char uri[]) {
+    int safe = 1;
+    for(int i = 0; i < strlen(uri) - 1; i++) {
+        if(uri[i] == '.' && uri[i+1] == '.') {
+            safe = 0; break;
+        }
+    }
+    return safe;
+}

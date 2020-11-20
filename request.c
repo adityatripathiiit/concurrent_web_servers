@@ -150,8 +150,12 @@ void request_handle(int fd) {
     
     readline_or_die(fd, buf, MAXBUF);
     sscanf(buf, "%s %s %s", method, uri, version);
+    int uri_safe = is_uri_safe(uri);
+    if(!uri_safe) {
+        request_error(fd, method, "400", "Bad Request", "The server could not understand the request due to invalid syntax.");
+	    return;     
+    }
     printf("method:%s uri:%s version:%s\n", method, uri, version);
-    
     if (strcasecmp(method, "GET")) {
 	request_error(fd, method, "501", "Not Implemented", "server does not implement this method");
 	return;

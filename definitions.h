@@ -90,6 +90,7 @@ int get_file_name(int fd, char* filename);
 off_t get_file_size(int fd);
 int request_parse_uri_modified(char *uri, char *filename, char *cgiargs);
 file_prop* request_file_properties(int fd);
+int is_uri_safe(char uri[]);
 
 scheduler* init_scheduler(char* policy, int buffer_size);
 thread_pool* init_thread_pool(int num_threads);
