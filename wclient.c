@@ -32,8 +32,7 @@ void client_print(int fd) {
     n = readline_or_die(fd, buf, MAXBUF);
     while (strcmp(buf, "\r\n") && (n > 0)) {
         printf("Header: %s", buf);
-        
-	n = readline_or_die(fd, buf, MAXBUF);
+	    n = readline_or_die(fd, buf, MAXBUF);
 	
     }
     
@@ -41,8 +40,7 @@ void client_print(int fd) {
     n = readline_or_die(fd, buf, MAXBUF);
     while (n > 0) {
         printf("Header: %s", buf);
-            
-	n = readline_or_die(fd, buf, MAXBUF);
+        n = readline_or_die(fd, buf, MAXBUF);
     }
 }
 
