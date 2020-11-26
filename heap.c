@@ -59,7 +59,7 @@ heap* init_heap(int heap_size, int by_file_name){
     for(int i=0;i< heap_size; i++){
         newHeap->array[i].fd = 0;
         newHeap->array[i].parameter = 0;
-        newHeap->array[i].file_name = NULL;
+        newHeap->array[i].file_name = (char *) malloc(1024*sizeof(char));
     }
 
     return newHeap;
@@ -79,7 +79,7 @@ void insert_in_heap(int conn_fd, off_t parameter, char* file_name, heap* Heap){
     Heap->curr_size++;
     Heap->array[index].fd = conn_fd;
     Heap->array[index].parameter = parameter;     
-    Heap->array[index].file_name = file_name;   
+    strcpy(Heap->array[index].file_name, file_name);
     
     // Heapify in bottom-up manner until min-heap property is not satisfied
     while(index!=0 && (heap_comparator(Heap, index/2, index)==1)){
