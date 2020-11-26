@@ -212,6 +212,15 @@ For load testing we used, Apache Jmeter to send HTTP requests to our concurrent 
 
 For load testing we used, Apache Jmeter to send HTTP requests to our concurrent server. Jmeter works by creating a number of threads (users) which request the specified server, a given number of times and records various metrics. These metrics can later be used to create graphs or tables to see the performance variation of the server under provided load.
 
+
+For load testing we used, Apache Jmeter to send HTTP requests to our concurrent server. Jmeter works by creating a number of threads (users) which request the specified server, a given number of times and records various metrics. These metrics can later be used to create graphs or tables to see the performance variation of the server under provided load.
+
+
+For load testing we used, Apache Jmeter to send HTTP requests to our concurrent server. Jmeter works by creating a number of threads (users) which request the specified server, a given number of times and records various metrics. These metrics can later be used to create graphs or tables to see the performance variation of the server under provided load.
+
+
+For load testing we used, Apache Jmeter to send HTTP requests to our concurrent server. Jmeter works by creating a number of threads (users) which request the specified server, a given number of times and records various metrics. These metrics can later be used to create graphs or tables to see the performance variation of the server under provided load.
+
 Jmeter can be used in a standalone format to analyze the results. Make sure to use less than 500 threads for GUI format, since Jmeter GUI is not for heavy load tests. For more practical load tests, use CLI of Jmeter.
 
 Here we used InfluxDB and Grafana to analyze the results in a more personalized format:
