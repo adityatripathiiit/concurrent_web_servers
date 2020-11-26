@@ -117,22 +117,22 @@ int main(int argc, char *argv[]) {
     int concur_clients = argc - 4;
     pthread_t threads[concur_clients];
 
-    #ifdef TESTMODE
-        char path[1024] = "./benchmarking/data/concurr_test_sff.csv";
+    // #ifdef TESTMODE
+    //     char path[1024] = "./benchmarking/data/concurr_test_sff.csv";
 
-        if (concur_clients == 1){
-            remove(path);   
-        }
+    //     if (concur_clients == 1){
+    //         remove(path);   
+    //     }
     
-        FILE * f = fopen(path, "a");
+    //     FILE * f = fopen(path, "a");
 
-        if(f == NULL){
-            printf("Could not create the CSV file %s\n", path);
-            return 0;
-        }
-        struct timeval start, end; 
-        gettimeofday(&start, NULL);
-    #endif
+    //     if(f == NULL){
+    //         printf("Could not create the CSV file %s\n", path);
+    //         return 0;
+    //     }
+    //     struct timeval start, end; 
+    //     gettimeofday(&start, NULL);
+    // #endif
     
     for(int i = 0; i < concur_clients; i++) {
         
@@ -151,14 +151,14 @@ int main(int argc, char *argv[]) {
         pthread_join(threads[i], NULL);
     }
 
-    #ifdef TESTMODE
-        gettimeofday(&end, NULL);
-        double time_taken; 
-        time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
-        time_taken = (time_taken + (end.tv_usec -start.tv_usec)) * 1e-6; 
-        fprintf(f,"%d,%f\n",concur_clients, time_taken);
-        fclose(f);
-    #endif
+    // #ifdef TESTMODE
+    //     gettimeofday(&end, NULL);
+    //     double time_taken; 
+    //     time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
+    //     time_taken = (time_taken + (end.tv_usec -start.tv_usec)) * 1e-6; 
+    //     fprintf(f,"%d,%f\n",concur_clients, time_taken);
+    //     fclose(f);
+    // #endif
     
     exit(0);
 }
