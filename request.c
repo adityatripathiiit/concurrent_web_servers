@@ -155,7 +155,7 @@ void request_handle(int fd) {
         request_error(fd, method, "400", "Bad Request", "The server could not understand the request due to invalid syntax.");
 	    return;     
     }
-    printf("method:%s uri:%s version:%s\n", method, uri, version);
+    // printf("method:%s uri:%s version:%s\n", method, uri, version);
     if (strcasecmp(method, "GET")) {
 	request_error(fd, method, "501", "Not Implemented", "server does not implement this method");
 	return;
