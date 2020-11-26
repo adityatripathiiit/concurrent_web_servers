@@ -1,16 +1,34 @@
+/*
+	Include Headers
+*/
 #include "common_headers.h"
 #include "common_threads.h"
 #include "definitions.h"
 
+//Set default directory
 char default_root[] = ".";
-
+ 
 int main(int argc, char *argv[]) {
+	//Initialize variables
     int c;
-    char *root_dir = default_root;	
+    char *root_dir = default_root;
+		
+	//Set default port number
     int port = 10000;
+
+	//Set defualt number of threads
 	int no_of_threads = 1; 
+
+	//Set default buffer size
 	int buffer_size = 1;
+
+	//Set default scheduling policy
 	char* scheduling_policy = "FIFO";
+
+	/*
+		Retrieve arguments from the prompt if defined.
+		Else use the default arguments.
+	*/
     while ((c = getopt(argc, argv, "d:p:t:b:s:")) != -1)
 	{
 		switch (c) {
@@ -47,18 +65,26 @@ int main(int argc, char *argv[]) {
 	// The thread_pool maintains all the threadsl, locks and condition variables
 	thread_pool* workers = init_thread_pool(no_of_threads);
 
-	// starting the threads
+	// Starting the threads
 	start_threads(scheduler, workers);
 	
-	// run out of this directory
+	// Run out of this directory
     chdir_or_die(root_dir);
     
+	// Listen on the specified port
     int listen_fd = open_listen_fd_or_die(port);	
 	
+	//Initialize variables
 	struct sockaddr_in client_addr;
 	int client_len;
 	int conn_fd; 
 	printf("Server Started \n");
+
+	/*
+		Accept incoming connection and create a socket descriptor.
+		Provide the socket descriptor to give_to_scheduler() function,
+		to schedule the request.
+	*/
     while (1) {
 		
 		client_len = sizeof(client_addr);

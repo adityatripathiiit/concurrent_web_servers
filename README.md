@@ -78,12 +78,12 @@ This is further elaborated in these pictures -
 ![alt text](./screenshots/Scheduling_Policy_API.png "Architecture")
 
 Here, we can see that a client makes an HTTP request to the server (parent thread), this main thread on receive this request puts the request in the buffer data structure and goes immediately to listen for more request, hence the main thread **does not block** other coming requests. Also, at the time of launching the server, it creates worker threads which pick up the request from this buffer data structure where each request is expressed as a file descripter (integer) for that client. These worker threads upon picking up request start serving the requested file or the spin cgi program.
-
+c
 ## Client 📲 
 
 The client is multi-request that can send a number of requests concurrently to the server by creating a new thread for every request and sending a connection request to the server. Currently the client requests "HTML" and ".cgi" files stored at the server.
 
-## Server 
+## Server 💻
 
 The server is multithreaded that supports different scheduling policies such as FIFO, SFF and SFNF. 
 
@@ -116,14 +116,14 @@ When a worker thread wakes, it handles the request for the smallest file. This p
 
 Same as SFF scheduling policy. The only change here is the scheduling parameter. Unlike SFF, SFNF uses shortest file name first. Rest all the API's used by SFNF are the same as that of SFF. 
 
-## Security
-
+## Security 🔒
+ 
 
 ## Instructions to Run 
 
 Run the `make` command in the base directory to compile all the required files. 
 
-### Running the Webserver
+### Running the Webserver ▶️
 
 Use the following command structure to run the server. 
 
@@ -149,7 +149,7 @@ prompt> ./wserver -d . -p 8003 -t 8 -b 16 -s SFF
 
 In this case, your web server will listen to port 8003, create 8 worker threads for handling HTTP requests, allocate 16 buffers for connections that are currently in progress (or waiting), and use SFF scheduling for arriving requests.
 
-### Running the client 
+### Running the client ⏩
 
 * Note that the client is a multi-request client. Therefore, there is provision to send multiple files with the same client. 
 
@@ -182,25 +182,25 @@ The source code contains the following files:
 
 - [`wclient.c`](./wclient.c): Contains main() and the support routines for the very simple web client. It is a multi-request client. 
 
-- [`thread_pool.c`](./thread_pool.c): 
+- [`thread_pool.c`](./thread_pool.c): Contains all the scheduler level APIs to create threads, start threads, schedule a new request, pick a request, give to scheduler and get from scheduler.
 
-- [`thread_worker.c`](./thread_worker.c): 
+- [`thread_worker.c`](./thread_worker.c): Contains worker thread that gets a request from scheduler and servers it in an infinite loop.
 
-- [`heap.c`](./heap.c): 
+- [`heap.c`](./heap.c): Contains core heap implementation and all methods required for the data structure.
 
-- [`circular_queue.c`](./circular_queue.c): 
+- [`circular_queue.c`](./circular_queue.c): Contains core circular queue implementation and all methods required for the data structure.
 
-- [`exploit.py`](./exploit.py): 
+- [`exploit.py`](./exploit.py): Contains code to exploit and crash the server, used for security aspect of the project.
 
-- [`common_threads.h`](./common_threads.h): Contains wrapper functions for threads and locks. 
+- [`common_threads.h`](./common_threads.h): Contains wrapper functions for threads and locks. This code has been taken from [here](https://github.com/remzi-arpacidusseau/ostep-code/blob/master/intro/common_threads.h)
 
-- [`definitions.h`](./definitions.h): Contains wrapper functions for all the data structure APIs defined by us. 
+- [`definitions.h`](./definitions.h): Contains function definitions and struct details for server
 
 - [`common_headers.h`](./common_headers.h): Contains all the header files that need to be included in the client/server before compiling. 
 
 - [`helpers.c`](./helpers.c): Contains the helper function to provide the size of a file or size of the name of the file requested by the client, before scheduling the request. These parameters help in implementing SFF and SFNF scheduling policies. 
 
-- [`spin.c`](./spin.c): A simple CGI program. Basically, it spins for a fixed amount of time. 
+- [`spin.c`](./spin.c): A simple CGI program. Basically, it spins for a fixed amount of time as given in the request.
   
 - [`Makefile`](./Makefile): It compiles the `wserver`, `wclient`, and `spin.cgi` programs. It also has predefined rules for running SFF, FIFO and SFNF scheduling policies for the server.
 

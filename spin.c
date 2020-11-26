@@ -1,3 +1,6 @@
+/*
+    Include headers
+*/
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,12 +9,10 @@
 #include <unistd.h>
 #include "definitions.h"
 
-//
-// This program is intended to help you test your web server.
-// You can use it to test that you are correctly having multiple threads
-// handling http requests.
-// 
-
+/*
+    get_seconds():
+    Calculates the present time in seconds.
+*/
 double get_seconds() {
     struct timeval t;
     int rc = gettimeofday(&t, NULL);
@@ -19,7 +20,10 @@ double get_seconds() {
     return (double) ((double)t.tv_sec + (double)t.tv_usec / 1e6);
 }
 
-
+/*
+    Main function calls the get_seconds() function to
+    spin for the specified amount of time on the server.
+*/
 int main(int argc, char *argv[]) {
     // Extract arguments
     double spin_for = 0.0;

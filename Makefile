@@ -25,7 +25,7 @@ spin.cgi: spin.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 test:
-	./wclient localhost 5000 0 /test/1.html /test/2.html /test/3.html /test/4.html /test/5.html /test/6.html /test/7.html /test/8.html
+	./wclient localhost 5000 /test/1.html /test/2.html /test/3.html /test/4.html /test/5.html /test/6.html /test/7.html /test/8.html
 
 FIFO:
 	./wserver -d . -p 5000 -t 5 -b 10 -s FIFO
