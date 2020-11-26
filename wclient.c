@@ -73,19 +73,17 @@ void* single_client(void* arg) {
 int main(int argc, char *argv[]) {
     char *host;
     int port;
-    if (argc < 5) {
+    if (argc < 4) {
         fprintf(stderr, "Usage: %s <host> <port> <filename(s)> \n", argv[0]);
         exit(1);
     }
-    if(atoi(argv[3]) == 1){
-        #define TESTMODE 
-    }
+
     // Getting the host and the port name
     host = argv[1];
     port = atoi(argv[2]);
 
     // Total number of files given as input from the command line
-    int concur_clients = argc - 4;
+    int concur_clients = argc - 3;
     pthread_t threads[concur_clients];
 
     // Creating threads to server requests for all the files concurrently
@@ -98,7 +96,7 @@ int main(int argc, char *argv[]) {
         }
         d->host = host;
         d->port = port;
-        d->filename = argv[4 + i];
+        d->filename = argv[3 + i];
         pthread_create(&threads[i], NULL, single_client, (void *)d);
         
     }
