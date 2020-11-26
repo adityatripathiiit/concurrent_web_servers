@@ -1,4 +1,4 @@
-# Concurrent Webserver
+# Concurrent Webserver ⭐
 
 A multi-threaded HTTP server implementing First in Fist out (FIFO), Shortest File First (SFF) and Shortest File Name First (SFNF) scheduling policies and security on the server. 
 
@@ -6,7 +6,7 @@ The timeline of the project is shown below:
 
 ![alt text](./screenshots/time_line.png "Timeline")
 
-## Directory Structure 🚦 
+## Directory Structure 📁
 
 ```
 concurrent_web_servers
@@ -65,7 +65,7 @@ concurrent_web_servers
 ✅ Security
 ```
 
-## Concurrent Architecture
+## Concurrent Architecture 🔥
 
 The basic idealogy behind a concurrent server is the producer-consumer problem where each request from client behaves as a new job which is being produced in the form of a file desciptor. The worker threads are the consumers that pick the job from the data structure (buffer)  implemented according to the scheduling policy. The below image depicts the overall producer-consumer model on the server side - 
 
@@ -93,26 +93,26 @@ The scheduling policy API implemented in the server is as shown below:
 
 ![alt text](./screenshots/Scheduler_struct.png "Scheduler")
 
-### Base Model
+### Base Model 🚲
 
 Base Model has been taken from: [OSTEP Webserver](https://github.com/remzi-arpacidusseau/ostep-projects/tree/master/concurrency-webserver). The base webserver can only server a single client at a given time. It is a **non-concurrent server** and hence **blocks** other requests while it is serving the current one. 
 
 _Note - This base model was provided to us as a starter template for this project._
 
-### FIFO Model
+### FIFO Model 🚁 
 
 When a worker thread wakes, it handles the first request (i.e., the oldest request) in the buffer. Note that the HTTP requests will not necessarily finish in FIFO order; the order in which the requests complete will depend upon how the OS schedules the active threads.
 
 
 ![alt text](./screenshots/Queue_FIFO.png "Queue for FIFO")
 
-### SFF Model
+### SFF Model 🚀
 
 When a worker thread wakes, it handles the request for the smallest file. This policy approximates Shortest Job First to the extent that the size of the file is a good prediction of how long it takes to service that request. Requests for static and dynamic content may be intermixed, depending upon the sizes of those files. Note that this algorithm can lead to the starvation of requests for large files. 
 
 ![alt text](./screenshots/Heap_SFF.png "Heap for SFF")
 
-### SFNF Model 
+### SFNF Model ✈️
 
 Same as SFF scheduling policy. The only change here is the scheduling parameter. Unlike SFF, SFNF uses shortest file name first. Rest all the API's used by SFNF are the same as that of SFF. 
 
@@ -171,7 +171,7 @@ prompt> ./wclient 127.0.0.1 8003 ./test/1.html ./test/2.html
 ```
 The above command will run a client that will request 2 files concurrently from the server listening on the port 8003. 
 
-## Source Code Overview
+## Source Code Overview ✏️
 The source code contains the following files: 
 
 - [`wserver.c`](./wserver.c): Contains `main()` for the web server and the basic serving loop. 
@@ -205,7 +205,10 @@ The source code contains the following files:
 - [`Makefile`](./Makefile): It compiles the `wserver`, `wclient`, and `spin.cgi` programs. It also has predefined rules for running SFF, FIFO and SFNF scheduling policies for the server.
 
 
-## Load Testing and Benchmarking
+## Load Testing and Benchmarking 🚦
+
+For load testing we used, Apache Jmeter to send HTTP requests to our concurrent server. Jmeter works by creating a number of threads (users) which request the specified server, a given number of times and records various metrics. These metrics can later be used to create graphs or tables to see the performance variation of the server under provided load.
+
 
 For load testing we used, Apache Jmeter to send HTTP requests to our concurrent server. Jmeter works by creating a number of threads (users) which request the specified server, a given number of times and records various metrics. These metrics can later be used to create graphs or tables to see the performance variation of the server under provided load.
 
