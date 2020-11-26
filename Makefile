@@ -33,5 +33,9 @@ FIFO:
 SFF:
 	./wserver -d . -p 5000 -t 5 -b 10 -s SFF
 
+SFNF:
+	./wserver -d . -p 5000 -t 5 -b 10 -s SFNF
+
+
 clean:
-	-rm -f $(OBJS) wserver wclient spin.cgi
+	-rm -f $(OBJS) wserver wclient spin.cgis
