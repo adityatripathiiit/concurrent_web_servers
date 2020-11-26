@@ -118,7 +118,9 @@ Same as SFF scheduling policy. The only change here is the scheduling parameter.
 
 ## Security 🔒
  
+The multi-threaded server implementation is safe from any Buffer Overflow or Local file inclusion attacks. 
 
+The implementation given [here](https://github.com/remzi-arpacidusseau/ostep-projects/tree/master/concurrency-webserver/src) is prone to both the attacks. `exploit.py` written in python (requires pwntools) can exploit this bad implementation. Our implementation fixes these issues.   
 ## Instructions to Run 
 
 Run the `make` command in the base directory to compile all the required files. 
@@ -190,7 +192,7 @@ The source code contains the following files:
 
 - [`circular_queue.c`](./circular_queue.c): Contains core circular queue implementation and all methods required for the data structure.
 
-- [`exploit.py`](./exploit.py): Contains code to exploit and crash the server, used for security aspect of the project.
+- [`exploit.py`](./exploit.py): Contains code to exploit local file inclusion or crash the server through buffer overflow for [this](https://github.com/remzi-arpacidusseau/ostep-projects/tree/master/concurrency-webserver/src)  implementation.
 
 - [`common_threads.h`](./common_threads.h): Contains wrapper functions for threads and locks. This code has been taken from [here](https://github.com/remzi-arpacidusseau/ostep-code/blob/master/intro/common_threads.h)
 
