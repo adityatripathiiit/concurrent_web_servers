@@ -38,4 +38,4 @@ SFNF:
 
 
 clean:
-	-rm -f $(OBJS) wserver wclient spin.cgis
+	-rm -f $(OBJS) wserver wclient spin.cgi
