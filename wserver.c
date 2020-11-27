@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 		
 		client_len = sizeof(client_addr);
 		conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
-		printf("Connection Accepted for FD: %d\n", conn_fd);
+		// printf("Connection Accepted for FD: %d\n", conn_fd);
 		
 		// Schedule the current request
 		give_to_scheduler(workers, scheduler, conn_fd);	
