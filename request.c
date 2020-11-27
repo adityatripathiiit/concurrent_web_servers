@@ -1,18 +1,17 @@
 #include "io_helper.h"
 #include "request.h"
+#include "definitions.h"
 
-//
-// Some of this code stolen from Bryant/O'Halloran
-// Hopefully this is not a problem ... :)
-//
-
-#define MAXBUF (8192)
-
+/*
+    request_error(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg):
+    Sends the respective error message and code to the client if an error
+    occurs.
+*/
 void request_error(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg) {
     char buf[MAXBUF], body[MAXBUF];
     
     // Create the body of error message first (have to know its length for header)
-    sprintf(body, ""
+    snprintf(body, MAXBUF, ""
 	    "<!doctype html>\r\n"
 	    "<head>\r\n"
 	    "  <title>OSTEP WebServer Error</title>\r\n"
@@ -24,22 +23,23 @@ void request_error(int fd, char *cause, char *errnum, char *shortmsg, char *long
 	    "</html>\r\n", errnum, shortmsg, longmsg, cause);
     
     // Write out the header information for this response
-    sprintf(buf, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);
+    snprintf(buf, MAXBUF, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);
     write_or_die(fd, buf, strlen(buf));
     
-    sprintf(buf, "Content-Type: text/html\r\n");
+    snprintf(buf, MAXBUF, "Content-Type: text/html\r\n");
     write_or_die(fd, buf, strlen(buf));
     
-    sprintf(buf, "Content-Length: %lu\r\n\r\n", strlen(body));
+    snprintf(buf, MAXBUF, "Content-Length: %lu\r\n\r\n", strlen(body));
     write_or_die(fd, buf, strlen(buf));
     
     // Write out the body last
     write_or_die(fd, body, strlen(body));
 }
 
-//
-// Reads and discards everything up to an empty text line
-//
+/*
+    request_read_headers(int fd):
+    Reads and discards everything up to an empty text line
+*/
 void request_read_headers(int fd) {
     char buf[MAXBUF];
     
@@ -50,38 +50,40 @@ void request_read_headers(int fd) {
     return;
 }
 
-//
-// Return 1 if static, 0 if dynamic content
-// Calculates filename (and cgiargs, for dynamic) from uri
-//
+/*
+    request_parse_uri(char *uri, char *filename, char *cgiargs):
+    Returns 1 for a static content request and 0 for a dynamic content request.
+    Calculates filename (and cgiargs, for dynamic) from uri.
+*/
 int request_parse_uri(char *uri, char *filename, char *cgiargs) {
     char *ptr;
     
     if (!strstr(uri, "cgi")) { 
-	// static
-	strcpy(cgiargs, "");
-	sprintf(filename, ".%s", uri);
-	if (uri[strlen(uri)-1] == '/') {
-	    strcat(filename, "index.html");
-	}
-	return 1;
+        // Static Content
+        strcpy(cgiargs, "");
+        snprintf(filename, MAXBUF, ".%s", uri);
+        if (uri[strlen(uri)-1] == '/') {
+            strcat(filename, "index.html");
+        }
+        return 1;
     } else { 
-	// dynamic
+	// Dynamic Content
 	ptr = index(uri, '?');
 	if (ptr) {
-	    strcpy(cgiargs, ptr+1);
+	    strncpy(cgiargs, ptr+1, MAXBUF);
 	    *ptr = '\0';
 	} else {
 	    strcpy(cgiargs, "");
 	}
-	sprintf(filename, ".%s", uri);
+	snprintf(filename, MAXBUF, ".%s", uri);
 	return 0;
     }
 }
 
-//
-// Fills in the filetype given the filename
-//
+/*
+    request_get_filetype(char *filename, char *filetype):
+    Fills in the filetype given the filename.
+*/
 void request_get_filetype(char *filename, char *filetype) {
     if (strstr(filename, ".html")) 
 	strcpy(filetype, "text/html");
@@ -93,30 +95,37 @@ void request_get_filetype(char *filename, char *filetype) {
 	strcpy(filetype, "text/plain");
 }
 
+/*
+    request_serve_dynamic(int fd, char *filename, char *cgiargs):
+    Serves dynamic content requests, i.e. CGI files. 
+    The server does this by forking.
+*/
 void request_serve_dynamic(int fd, char *filename, char *cgiargs) {
     char buf[MAXBUF], *argv[] = { NULL };
-    
-    // The server does only a little bit of the header.  
-    // The CGI script has to finish writing out the header.
-    sprintf(buf, ""
+
+    snprintf(buf, MAXBUF, ""
 	    "HTTP/1.0 200 OK\r\n"
 	    "Server: OSTEP WebServer\r\n");
     
     write_or_die(fd, buf, strlen(buf));
     
-    if (fork_or_die() == 0) {                        // child
-	setenv_or_die("QUERY_STRING", cgiargs, 1);   // args to cgi go here
-	dup2_or_die(fd, STDOUT_FILENO);              // make cgi writes go to socket (not screen)
-	extern char **environ;                       // defined by libc 
+    if (fork_or_die() == 0) {                    // Child Process
+	setenv_or_die("QUERY_STRING", cgiargs, 1);   // Args to cgi go here
+	dup2_or_die(fd, STDOUT_FILENO);              // Make cgi writes go to socket (not screen)
+	extern char **environ;                       // Defined by libc 
 	execve_or_die(filename, argv, environ);
     } else {
 	wait_or_die(NULL);
     }
 }
 
+/*
+    request_serve_static(int fd, char *filename, int filesize):
+    Serves static content requests, i.e. HTML files. 
+*/
 void request_serve_static(int fd, char *filename, int filesize) {
     int srcfd;
-    char *srcp, filetype[MAXBUF], buf[MAXBUF];
+    char *srcp, filetype[MAXFILETYPE], buf[MAXBUF];
     
     request_get_filetype(filename, filetype);
     srcfd = open_or_die(filename, O_RDONLY, 0);
@@ -127,7 +136,7 @@ void request_serve_static(int fd, char *filename, int filesize) {
     close_or_die(srcfd);
     
     // put together response
-    sprintf(buf, ""
+    snprintf(buf, MAXBUF, ""
 	    "HTTP/1.0 200 OK\r\n"
 	    "Server: OSTEP WebServer\r\n"
 	    "Content-Length: %d\r\n"
@@ -141,8 +150,11 @@ void request_serve_static(int fd, char *filename, int filesize) {
     munmap_or_die(srcp, filesize);
 }
 
-// handle a request
-void request_handle(int fd) {
+/*
+    request_handle(int fd):
+    Handles a request
+*/
+void request_handle(int fd) {    
     int is_static;
     struct stat sbuf;
     char buf[MAXBUF], method[MAXBUF], uri[MAXBUF], version[MAXBUF];
@@ -150,8 +162,14 @@ void request_handle(int fd) {
     
     readline_or_die(fd, buf, MAXBUF);
     sscanf(buf, "%s %s %s", method, uri, version);
-    printf("method:%s uri:%s version:%s\n", method, uri, version);
+    int uri_safe = is_uri_safe(uri);
     
+    if(!uri_safe) {
+        request_error(fd, method, "400", "Bad Request", "The server could not understand the request due to invalid syntax.");
+	    return;     
+    }
+
+    // printf("method:%s uri:%s version:%s\n", method, uri, version);
     if (strcasecmp(method, "GET")) {
 	request_error(fd, method, "501", "Not Implemented", "server does not implement this method");
 	return;

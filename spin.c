@@ -1,18 +1,18 @@
+/*
+    Include headers
+*/
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include "definitions.h"
 
-#define MAXBUF (8192)
-
-//
-// This program is intended to help you test your web server.
-// You can use it to test that you are correctly having multiple threads
-// handling http requests.
-// 
-
+/*
+    get_seconds():
+    Calculates the present time in seconds.
+*/
 double get_seconds() {
     struct timeval t;
     int rc = gettimeofday(&t, NULL);
@@ -20,7 +20,10 @@ double get_seconds() {
     return (double) ((double)t.tv_sec + (double)t.tv_usec / 1e6);
 }
 
-
+/*
+    Main function calls the get_seconds() function to
+    spin for the specified amount of time on the server.
+*/
 int main(int argc, char *argv[]) {
     // Extract arguments
     double spin_for = 0.0;
@@ -36,10 +39,12 @@ int main(int argc, char *argv[]) {
     double t2 = get_seconds();
     
     /* Make the response body */
-    char content[MAXBUF];
-    sprintf(content, "<p>Welcome to the CGI program (%s)</p>\r\n", buf);
-    sprintf(content, "%s<p>My only purpose is to waste time on the server!</p>\r\n", content);
-    sprintf(content, "%s<p>I spun for %.2f seconds</p>\r\n", content, t2 - t1);
+    char content[MAXBUF + 1];
+    char spunfor[MAXBUF];
+    snprintf(content, MAXBUF, "<p>Welcome to the CGI program (%s)</p>\r\n", buf);
+    strncat(content, "%s<p>My only purpose is to waste time on the server!</p>\r\n", MAXBUF);
+    snprintf(spunfor, MAXBUF, "<p>I spun for %.2f seconds</p>\r\n", t2 - t1);
+    strncat(content, spunfor, MAXBUF);
     
     /* Generate the HTTP response */
     printf("Content-length: %lu\r\n", strlen(content));

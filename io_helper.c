@@ -1,5 +1,10 @@
 #include "io_helper.h"
 
+/*
+    readline(int fd, void *buf, size_t maxlen):
+    Reads from the socket in a buffer until
+    end of line is encountered.
+*/
 ssize_t readline(int fd, void *buf, size_t maxlen) {
     char c;
     char *bufp = buf;
@@ -22,7 +27,11 @@ ssize_t readline(int fd, void *buf, size_t maxlen) {
     return n;
 }
 
-
+/*
+    open_client_fd(char *hostname, int port):
+    Opens a socket at the given port to receive
+    connections.
+*/
 int open_client_fd(char *hostname, int port) {
     int client_fd;
     struct hostent *hp;
@@ -46,6 +55,10 @@ int open_client_fd(char *hostname, int port) {
     return client_fd;
 }
 
+/*
+    open_listen_fd(int port):
+    Server listens at the given port.
+*/
 int open_listen_fd(int port) {
     // Create a socket descriptor 
     int listen_fd;
