@@ -26,11 +26,11 @@ spin.cgi: spin.c
 
 TEST_SFF:
 	./wserver -d . -p 5001 -t 5 -b 10 -s SFF &
-	./wclient localhost 5001 /test/1.html /test/2.html /test/3.html /test/4.html /test/5.html /test/6.html /test/7.html /test/8.html
+	./wclient localhost 5001 /test/1.html /test/2.html /test/3.html /test/4.html /test/5.html /test/6.html /test/7.html /test/8.html > /dev/null
 
 TEST_FIFO:
 	./wserver -d . -p 5002 -t 5 -b 10 -s FIFO &
-	./wclient localhost 5002 /test/1.html /test/2.html /test/3.html /test/4.html /test/5.html /test/6.html /test/7.html /test/8.html
+	./wclient localhost 5002 /test/1.html /test/2.html /test/3.html /test/4.html /test/5.html /test/6.html /test/7.html /test/8.html > /dev/null
 
 
 FIFO:
